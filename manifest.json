@@ -1,0 +1,9 @@
+{
+    "name": "Linkedin Post Comment",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "description": "An extension to comment on LinkedIn posts automatically.",
+    "permissions": ["activeTab"],
+    "host_permissions": ["https://www.linkedin.com/*"]
+  }
+  
