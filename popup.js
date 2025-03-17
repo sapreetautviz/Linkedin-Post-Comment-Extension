@@ -1,14 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
     const button = document.getElementById("toggle");
 
-    // Check the current state from storage
     chrome.storage.local.get("isRunning", (data) => {
         if (data.isRunning) {
             button.textContent = "Stop";
-            button.style.background = "#d9534f"; // Red color for stop
+            button.style.background = "#d9534f";
         } else {
             button.textContent = "Start";
-            button.style.background = "#0073b1"; // LinkedIn blue for start
+            button.style.background = "#0073b1";
         }
     });
 
@@ -24,12 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                     let activeTab = tabs[0];
 
-                    if (!activeTab || !activeTab.url || activeTab.url.startsWith("chrome://") || activeTab.url.startsWith("edge://") || activeTab.url.startsWith("about:")) {
-                        alert("This extension cannot run on Chrome system pages.");
+                    if (!activeTab || !activeTab.url.startsWith("https://www.linkedin.com/")) {
+                        alert("Open a LinkedIn page to start.");
                         return;
                     }
 
-                    console.log("Starting Auto Commenter on:", activeTab.url);
+                    console.log("Starting Auto Commenter...");
 
                     chrome.scripting.executeScript({
                         target: { tabId: activeTab.id },
@@ -40,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 button.textContent = "Start";
                 button.style.background = "#0073b1";
                 console.log("Auto Commenter Stopped.");
+                chrome.storage.local.set({ postUrls: [], isRunning: false });
             }
         });
     });
