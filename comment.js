@@ -1,39 +1,51 @@
 setTimeout(() => {
-    console.log("🔵 Trying to comment...");
+    chrome.storage.local.get(["isRunning", "postUrls", "commentText"], (data) => {
+        if (!data.isRunning) {
+            console.log("🚫 Auto Commenter Stopped.");
+            return;
+        }
 
-    // Find the comment box
-    let commentBox = document.querySelector('div[contenteditable="true"]');
+        console.log("🔵 Trying to comment...");
 
-    if (commentBox) {
-        commentBox.click();
-        commentBox.innerText = "Great insights! Understanding AI agents' architecture and functionality is key to maximizing their impact. What are some challenges you've faced in integrating these technologies into your workflows? Let's discuss!";  // Insert comment
-        console.log("✅ Comment typed.");
+        let commentBox = document.querySelector('div[contenteditable="true"]');
 
-        // Wait before clicking the "Comment" button
-        setTimeout(() => {
-            // Select the correct Comment button
-            let commentButton = document.querySelector('.comments-comment-box__submit-button--cr');
+        if (commentBox) {
+            commentBox.click();
+            commentBox.innerText = data.commentText;
 
-            if (commentButton) {
-                commentButton.click();  // Click the button
-                console.log("✅ Comment button clicked!");
+            setTimeout(() => {
+                let commentButton = document.querySelector('.comments-comment-box__submit-button--cr');
 
-                // Move to the next post
-                setTimeout(() => {
-                    chrome.storage.local.get("postUrls", (data) => {
+                if (commentButton) {
+                    commentButton.click();
+                    console.log("✅ Comment posted!");
+
+                    setTimeout(() => {
                         let remainingPosts = data.postUrls.slice(1);
+
                         if (remainingPosts.length > 0) {
                             chrome.storage.local.set({ "postUrls": remainingPosts }, () => {
-                                window.location.href = remainingPosts[0]; // Open next post
+                                setTimeout(() => {
+                                    window.location.href = remainingPosts[0];
+                                }, Math.random() * (10000 - 5000) + 5000); // Random delay between 5s-10s
                             });
+                        } else {
+                            console.log("✅ All posts commented. Restarting in 10 seconds...");
+                            chrome.storage.local.set({ isRunning: false });
+
+                            setTimeout(() => {
+                                chrome.storage.local.set({ isRunning: true }, () => {
+                                    window.location.reload();
+                                });
+                            }, 10000); // Restart after 10 seconds
                         }
-                    });
-                }, 2000);
-            } else {
-                console.warn("⚠️ Comment button not found!");
-            }
-        }, 3000);
-    } else {
-        console.warn("⚠️ Comment box not found!");
-    }
+                    }, 2000);
+                } else {
+                    console.warn("⚠️ Comment button not found!");
+                }
+            }, 3000);
+        } else {
+            console.warn("⚠️ Comment box not found!");
+        }
+    });
 }, 5000);
