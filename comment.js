@@ -11,39 +11,37 @@ setTimeout(() => {
 
         if (commentBox) {
             commentBox.click();
-            commentBox.innerText = data.commentText;
-
             setTimeout(() => {
-                let commentButton = document.querySelector('.comments-comment-box__submit-button--cr');
+                commentBox.innerText = data.commentText;
 
-                if (commentButton) {
-                    commentButton.click();
-                    console.log("✅ Comment posted!");
+                setTimeout(() => {
+                    let commentButton = document.querySelector('.comments-comment-box__submit-button--cr');
 
-                    setTimeout(() => {
-                        let remainingPosts = data.postUrls.slice(1);
+                    if (commentButton) {
+                        commentButton.click();
+                        console.log("✅ Comment posted!");
 
-                        if (remainingPosts.length > 0) {
-                            chrome.storage.local.set({ "postUrls": remainingPosts }, () => {
-                                setTimeout(() => {
-                                    window.location.href = remainingPosts[0];
-                                }, Math.random() * (10000 - 5000) + 5000); // Random delay between 5s-10s
-                            });
-                        } else {
-                            console.log("✅ All posts commented. Restarting in 10 seconds...");
-                            chrome.storage.local.set({ isRunning: false });
+                        setTimeout(() => {
+                            let remainingPosts = data.postUrls.filter(post => post !== window.location.href);
+                            if (remainingPosts.length > 0) {
+                                chrome.storage.local.set({ "postUrls": remainingPosts }, () => {
+                                    let randomDelay = Math.random() * (45000 - 15000) + 15000; // 15-45 sec delay
+                                    console.log(`⏳ Waiting ${randomDelay / 1000} sec before next post...`);
 
-                            setTimeout(() => {
-                                chrome.storage.local.set({ isRunning: true }, () => {
-                                    window.location.reload();
+                                    setTimeout(() => {
+                                        window.location.href = remainingPosts[0];
+                                    }, randomDelay);
                                 });
-                            }, 10000); // Restart after 10 seconds
-                        }
-                    }, 2000);
-                } else {
-                    console.warn("⚠️ Comment button not found!");
-                }
-            }, 3000);
+                            } else {
+                                console.log("✅ All posts commented. Stopping...");
+                                chrome.storage.local.set({ isRunning: false });
+                            }
+                        }, 5000);
+                    } else {
+                        console.warn("⚠️ Comment button not found!");
+                    }
+                }, 3000);
+            }, 2000);
         } else {
             console.warn("⚠️ Comment box not found!");
         }
