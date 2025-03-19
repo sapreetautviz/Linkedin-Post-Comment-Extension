@@ -1,5 +1,5 @@
 setTimeout(() => {
-    chrome.storage.local.get(["isRunning", "postUrls", "commentText"], (data) => {
+    chrome.storage.local.get(["isRunning", "postUrls"], (data) => {
       if (!data.isRunning) {
         console.log("🚫 Auto Commenter Stopped.");
         return;
@@ -20,8 +20,21 @@ setTimeout(() => {
             if (commentButton) {
               commentButton.click();
               console.log("✅ Comment posted!");
-              
-  
+
+              fetch('https://autviz.app.n8n.cloud/webhook/Update-excel-sheet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "Post Url": data.postUrls[0].url })
+              })
+              .then(response => {
+                if (response.ok) {
+                  console.log("✅ API Status Updated!");
+                } else {
+                  console.error("❗ Failed to update API status");
+                }
+              })
+              .catch(error => console.error("❗ API Error:", error));
+
               setTimeout(() => {
                 // Remove the current post from the list and update storage
                 let remainingPosts = data.postUrls.slice(1); // Shift to the next post
@@ -40,12 +53,12 @@ setTimeout(() => {
                 }
               }, 5000);
             } else {
-              console.warn("⚠️ Comment button not found!");
+              console.log("⚠️ Comment button not found!");
             }
           }, 3000);
         }, 2000);
       } else {
-        console.warn("⚠️ Comment box not found!");
+        console.log("⚠️ Comment box not found!");
       }
     });
   }, 5000);
