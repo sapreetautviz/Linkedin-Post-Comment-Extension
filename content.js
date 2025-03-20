@@ -1,5 +1,4 @@
 
-
 var part1 = "eyJ0eXAiOiJKV1QiLCJub25jZSI6IkM0dzl1X3pDWDdhRHFyU2UybURTYU9OeGgtQ0R0OWdQV3AySWV4WU1DQW8iLCJhbGciOiJSUzI1NiIsIng1dCI6IkpETmFfNGk0cjdGZ2lnTDNzSElsSTN4Vi1JVSIsImtpZCI6IkpETmFfNGk0cjdGZ2lnTDNzSElsSTN4Vi1JVSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kMWQzNDI2Mi00MDIwLTQwZTAtOTlmNy03NjRlOGU4MDgyYjcvIiwiaWF0IjoxNzQyMzY3NTA1LCJuYmYiOjE3NDIzNjc1MDUsImV4cCI6MTc0MjQ1NDIwNSwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFVUUF1LzhaQUFBQUpkVEN0QjhqQ090cVJJUXR3NmlxdWtCTGtkVWhOUlBMWWhYV1IxRmJiZ3lFc05CM241VC8wbUQzWmlCek1ESXFRMkQwSHF2MmdQTjJoMC9tTXdnZWh3PT0iLCJhbXIiOlsicHdkIl0sImFwc";
 var part2 = "F9kaXNwbGF5bmFtZSI6IkdyYXBoIEV4cGxvcmVyIiwiYXBwaWQiOiJkZThiYzhiNS1kOWY5LTQ4YjEtYThhZC1iNzQ4ZGE3MjUwNjQiLCJhcHBpZGFjciI6IjAiLCJmYW1pbHlfbmFtZSI6IlNpbmdoIiwiZ2l2ZW5fbmFtZSI6IlNhcHJlZXQiLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIxMTAuMjI3LjE4OC42MCIsIm5hbWUiOiJTYXByZWV0IFNpbmdoIiwib2lkIjoiNzQyYjE3MTUtODk5Mi00ZjU3LTg0MjgtOTNjNzFlNTlmMDE3IiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDMyMDAzNERCNUM3MTQiLCJyaCI6IjEuQVNzQVlrTFQwU0JBNEVDWjkzWk9qb0NDdHdNQUFBQUFBQUFBd0FBQUFBQUFBQURDQUxnckFBLiIsInNjcCI6IkJyb3dzZXJTaXRlTGlzdHMuUmVhZC5BbGwgQnJvd3NlclNpdGVMaXN0cy5SZWFkV3JpdGUuQWxsIENoYW5uZWwuUmVhZEJhc2ljLkFsbCBDaGF0LlJlYWQgQ2hhdC5SZWFkQmFzaWMgQ2hhdC5SZWFkV3";
 var part3 = "JpdGUgQ2hhdE1lc3NhZ2UuUmVhZCBDb250YWN0cy5SZWFkIEZpbGVzLlJlYWQgRmlsZXMuUmVhZC5BbGwgRmlsZXMuUmVhZFdyaXRlIE1haWwuUmVhZCBNYWlsLlJlYWRCYXNpYyBNYWlsYm94U2V0dGluZ3MuUmVhZCBvcGVuaWQgUGVvcGxlLlJlYWQgcHJvZmlsZSBTaXRlcy5SZWFkLkFsbCBTaXRlcy5SZWFkV3JpdGUuQWxsIFRhc2tzLlJlYWQgVGFza3MuUmVhZFdyaXRlIFRlYW0uUmVhZEJhc2ljLkFsbCBUZWFtc0FwcEluc3RhbGxhdGlvbi5SZWFkRm9yQ2hhdCBUZWFtc0FwcEluc3RhbGxhdGlvbi5SZWFkRm9yVXNlciBVc2VyLlJlYWQgVXNlci5SZWFkQmFzaWMuQWxsIFVzZXIuUmVhZFdyaXRlIFVzZXJBY3Rpdml0eS5SZWFkV3JpdGUuQ3JlYXRlZEJ5QXBwIGVtYWlsIiwic";
@@ -11,14 +10,13 @@ var part7 = "FKzlgwdpZR58jVhJ1HjCPakrO0rN0GtjT5c0Obo2YuNVr9X4-ZiqSyldiDhP7ebBC01
 var accessToken = part1 + part2 + part3 + part4 + part5 + part6 + part7;
 var driveItemId = "01MIEJ6MFZL2K2XWBY7BB2AGZI4SQ7JTMS";
 var worksheetName = "Post%20Details";
-var rangeAddress = "A1:D10";
-var maxPosts = 6;
+var maxPosts = 10;
 var postLinksArray = [];
 
 async function fetchPostLinks() {
     console.log("🔵 API Running...");
 
-    const url = `https://graph.microsoft.com/v1.0/me/drive/items/${driveItemId}/workbook/worksheets/${worksheetName}/range(${rangeAddress})?$select=values`;
+    const url = `https://graph.microsoft.com/v1.0/me/drive/items/${driveItemId}/workbook/worksheets/${worksheetName}/usedRange?$select=values`;
 
     try {
         const response = await fetch(url, {
@@ -51,6 +49,7 @@ async function fetchPostLinks() {
 
         console.log("Fetched Post Links:", postLinks);
         postLinks = postLinks.filter((item)=>item.Status!=='done')
+        console.log("Total URLs", postLinks)
         postLinks.forEach((item) => postLinksArray.push({url: item?.["Post Url"],comment:item?.['Post comment']}))
         return postLinks;
     } catch (error) {
@@ -88,7 +87,7 @@ async function autoComment() {
 
      try {
         chrome.storage.local.set({ "postUrls": postLinks.slice(0, maxPosts), "isRunning": true }, () => {
-         window.location.href = postLinks[0].url; // Open first post
+          window.location.href = postLinks[0].url; // Open first post
         });
      } catch (error) {
         console.log(error)
