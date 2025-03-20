@@ -1,5 +1,6 @@
 setTimeout(() => {
     chrome.storage.local.get(["isRunning", "postUrls"], (data) => {
+      console.log("Comment data",data)
       if (!data.isRunning) {
         console.log("🚫 Auto Commenter Stopped.");
         return;
@@ -21,10 +22,10 @@ setTimeout(() => {
               commentButton.click();
               console.log("✅ Comment posted!");
 
-              fetch('https://autviz.app.n8n.cloud/webhook/Update-excel-sheet', {
+              fetch('https://30lss7df-7077.inc1.devtunnels.ms/api/LinkedinAutomation/UpdateStatus', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "Post Url": data.postUrls[0].url })
+                body: JSON.stringify({ "postUrl": data.postUrls[0].url })
               })
               .then(response => {
                 if (response.ok) {
